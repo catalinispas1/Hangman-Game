@@ -15,11 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class InputFragment extends Fragment {
-    Button goBackButton;
+
     Fragment inputFragment;
-    InputFragment(Button goBackButton){
-        this.goBackButton = goBackButton;
+    Button goBackButton;
+    Button history;
+    InputFragment(Button goBackButton, Button history){
         this.inputFragment = this;
+        this.goBackButton = goBackButton;
+        this.history = history;
     }
 
     MainActivity mainActivity;
@@ -38,7 +41,8 @@ public class InputFragment extends Fragment {
             public void onClick(View view) {
                 mainActivity.loadFragment(inputFragment, true);
                 mainActivity.recyclerView.setVisibility(View.VISIBLE);
-                goBackButton.setVisibility(View.INVISIBLE);
+                mainActivity.goBackButton.setVisibility(View.INVISIBLE);
+                history.setVisibility(View.VISIBLE);
             }
         });
 
@@ -50,7 +54,7 @@ public class InputFragment extends Fragment {
                     Toast.makeText(getActivity(), "Type a larger word", Toast.LENGTH_SHORT).show();
                 } else {
                     MainActivity mainActivity = (MainActivity) getActivity();
-                    mainActivity.loadFragment(new GameRunning(goBackButton), false);
+                    mainActivity.loadFragment(new GameRunning(goBackButton, history), false);
                 }
             }
         });

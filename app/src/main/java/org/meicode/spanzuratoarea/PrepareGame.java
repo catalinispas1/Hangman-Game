@@ -1,6 +1,8 @@
 package org.meicode.spanzuratoarea;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -8,8 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.meicode.spanzuratoarea.adapters.GameHistoryAdapter;
+import org.meicode.spanzuratoarea.db.entity.GameHistory;
+
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PrepareGame {
     String[] fruits = {"Apple", "Apricot", "Avocado", "Aubergine", "Berries", "Butternut squash", "Cherries", "Chupa-chupa", "Crab apple", "Clementine", "Cucumber", "Courgette", "Custard apple",
@@ -192,6 +199,7 @@ public class PrepareGame {
                 attemptsText.setTextSize(25);
                 button.setVisibility(View.INVISIBLE);
                 getUserChar.setEnabled(false);
+                addHistoryGame(imageResorces[attempts], printGuessWord(), attempts, false, printWord(wordArray));
                 return;
             }
         }
@@ -201,8 +209,31 @@ public class PrepareGame {
             attemptsText.setTextSize(40);
             button.setVisibility(View.INVISIBLE);
             getUserChar.setEnabled(false);
+            addHistoryGame(imageResorces[attempts], printGuessWord(), attempts, true, printWord(wordArray));
         }
         history.add(userChar);
     }
-}
 
+    public void addHistoryGame(int imageSrc, String wordState, int attempts, boolean gameWon, String wordRevelead){
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                long id = GameHistoryFragment.gameHistoryAppDatabase.getGameHistoryDAO().addGameHistory(new GameHistory(imageSrc, wordState, attempts, gameWon, 0, wordRevelead));
+                GameHistory gameHistory = GameHistoryFragment.gameHistoryAppDatabase.getGameHistoryDAO().getGameHistory(id);
+
+                if(gameHistory != null) {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            GameHistoryFragment.gameHistoryArrayList.add(0, gameHistory);
+                            if(GameHistoryFragment.gameHistoryAdapter == null) return;
+                            GameHistoryFragment.gameHistoryAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+        });
+    }
+}

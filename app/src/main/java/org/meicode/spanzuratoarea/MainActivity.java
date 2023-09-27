@@ -6,11 +6,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+
+import org.meicode.spanzuratoarea.adapters.GameModeAdapter;
+import org.meicode.spanzuratoarea.adapters.WordType;
+import org.meicode.spanzuratoarea.db.GameHistoryAppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +27,12 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     List<WordType> wordTypeList;
 
     // 3. Adapter
-    MyAdapter myAdapter;
+    GameModeAdapter myAdapter;
     static int optionChoosen;
     static String word;
     Button goBackButton;
+    Button clearHistory;
+    Button history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         wordTypeList = new ArrayList<>();
         goBackButton = findViewById(R.id.goBack);
         goBackButton.setVisibility(View.INVISIBLE);
+        clearHistory = findViewById(R.id.clearHistory);
+        clearHistory.setVisibility(View.INVISIBLE);
+        history = findViewById(R.id.history);
 
         WordType wordType1 = new WordType(R.drawable.userinput, "Type a word for others to guess it");
         WordType wordType2 = new WordType(R.drawable.fruits, "Get a random fruit and guess it");
@@ -52,11 +61,22 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        myAdapter = new MyAdapter(wordTypeList);
+        myAdapter = new GameModeAdapter(wordTypeList);
         recyclerView.setAdapter(myAdapter);
 
         myAdapter.setClickListener(this);
 
+        GameHistoryFragment.gameHistoryAppDatabase = Room.databaseBuilder(getApplicationContext(), GameHistoryAppDatabase.class, "GameHistoryDB").build();
+        GameHistoryFragment.gameHistoryArrayList = new ArrayList<>();
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadFragment(new GameHistoryFragment(goBackButton, clearHistory, history), false);
+                history.setVisibility(View.INVISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                clearHistory.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     public void loadFragment(Fragment fragment, boolean removeFragment){
@@ -76,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     public void itemClicked(View view, int position) {
         recyclerView.setVisibility(View.GONE);
         optionChoosen = position;
-
+        history.setVisibility(View.INVISIBLE);
         if(position == 0) {
-            loadFragment(new InputFragment(goBackButton), false);
-        } else loadFragment(new GameRunning(goBackButton), false);
+            loadFragment(new InputFragment(goBackButton, history), false);
+        } else loadFragment(new GameRunning(goBackButton, history), false);
     }
 }

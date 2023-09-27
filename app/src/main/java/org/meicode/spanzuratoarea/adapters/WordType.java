@@ -1,4 +1,4 @@
-package org.meicode.spanzuratoarea;
+package org.meicode.spanzuratoarea.adapters;
 
 public class WordType {
     private int imageSource;

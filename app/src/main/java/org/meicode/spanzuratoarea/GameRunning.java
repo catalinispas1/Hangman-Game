@@ -15,6 +15,7 @@ import android.widget.TextView;
 public class GameRunning extends Fragment {
     private Fragment gameRunning;
     Button goBackButton;
+    Button history;
     MainActivity mainActivity;
     int[] imageResources = {
             R.drawable.image8,
@@ -26,8 +27,9 @@ public class GameRunning extends Fragment {
             R.drawable.image2,
             R.drawable.image1
     };
-    GameRunning(Button goBackButton){
+    GameRunning(Button goBackButton, Button history){
         this.goBackButton = goBackButton;
+        this.history = history;
     }
 
     @Override
@@ -51,8 +53,10 @@ public class GameRunning extends Fragment {
                 mainActivity.loadFragment(gameRunning, true);
                 mainActivity.recyclerView.setVisibility(View.VISIBLE);
                 goBackButton.setVisibility(View.INVISIBLE);
+                history.setVisibility(View.VISIBLE);
             }
         });
+
         PrepareGame prepareGame = new PrepareGame(MainActivity.optionChoosen, guessWord, attempts, editText, submitLetter,imageView, getActivity(), imageResources);
         prepareGame.prepareGame();
         guessWord.setText(prepareGame.printGuessWord());
@@ -68,9 +72,9 @@ public class GameRunning extends Fragment {
             @Override
             public void onClick(View view) {
                 prepareGame.checkGameLosing();
+
             }
         });
-
         return view;
     }
 }

@@ -1,5 +1,6 @@
-package org.meicode.spanzuratoarea;
+package org.meicode.spanzuratoarea.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,9 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.meicode.spanzuratoarea.ItemClickListener;
+import org.meicode.spanzuratoarea.R;
+
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+public class GameModeAdapter extends RecyclerView.Adapter<GameModeAdapter.MyViewHolder> {
 
     private List<WordType> wordTypeList;
 
@@ -19,7 +24,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         this.clickListener = clickListener;
     }
 
-    public MyAdapter(List<WordType> wordTypeList) {
+    public GameModeAdapter(List<WordType> wordTypeList) {
         this.wordTypeList = wordTypeList;
     }
 
